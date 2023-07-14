@@ -21,7 +21,7 @@ ph.connect('http://url.turso.io', 't0k3nfh734tr673gqi78rytg3q34786')
 @ph.counter('ZIP_DWNLDS')
 def download_zipfile():
     # code for downloading zip file
-    # or use ph.counter('ZIP_DWNLDS').incr()
+    # or use ph.counter('ZIP_DWNLDS', incr=1)
     ...
 count = ph.fetch('counter', 'ZIP_DWNLDS') 
 

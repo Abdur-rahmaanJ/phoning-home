@@ -27,12 +27,12 @@ class PhoningHome:
                         s[1]
                     ) for s in _sql.create_tables]
                 rss = client.batch(libsql_statements)
-            except libsql_client.client.LibsqlError:
+            except libsql_client.client.LibsqlError as e:
                 pass
     
     @classmethod
     def fetch(cls, *args):
-        if len(args) in [0, 1]:
+        if len(args) in [0]:
             raise Exception('Should have more arguments')
         
         optype = args[0]
@@ -54,6 +54,36 @@ class PhoningHome:
                     return rss[0].rows
                 except libsql_client.client.LibsqlError:
                     pass
+        elif optype == 'info':
+            client = libsql_client.create_client_sync(
+                url=cls.URL,
+                auth_token=cls.TOKEN
+            )
+            with client:
+                try:
+                    stmnts = [_sql.select_kv(namespace='default')]
+                    libsql_stmnts = _sql.libsql_batch(stmnts)
+                    rss = client.batch(libsql_stmnts)
+                    return rss[0].rows
+                except libsql_client.client.LibsqlError:
+                    pass
+        elif optype == 'namedinfo':
+            if len(args) != 2:
+                raise Exception('Args should be: namedinfo, <namespace>')
+            
+            namespace = args[1]
+            client = libsql_client.create_client_sync(
+                url=cls.URL,
+                auth_token=cls.TOKEN
+            )
+            with client:
+                try:
+                    stmnts = [_sql.select_kv(namespace=namespace)]
+                    libsql_stmnts = _sql.libsql_batch(stmnts)
+                    rss = client.batch(libsql_stmnts)
+                    return rss[0].rows
+                except libsql_client.client.LibsqlError:
+                    pass
     
     @classmethod
     def leaderboard(cls, gamename, player, score):
@@ -68,5 +98,38 @@ class PhoningHome:
                 rss = client.batch(libsql_stmnts)
             except libsql_client.client.LibsqlError:
                 pass
+
+    @classmethod
+    def info(cls, kv_dict):
+        client = libsql_client.create_client_sync(
+            url=cls.URL,
+            auth_token=cls.TOKEN
+        )
+        with client:
+            try:
+                stmnts = []
+                for key, value in kv_dict.items():
+                    stmnts.append(_sql.insert_kv(key, value))
+                libsql_stmnts = _sql.libsql_batch(stmnts)
+                rss = client.batch(libsql_stmnts)
+            except libsql_client.client.LibsqlError as e:
+                raise e
+
+    @classmethod
+    def namedinfo(cls, namespace, kv_dict):
+        client = libsql_client.create_client_sync(
+            url=cls.URL,
+            auth_token=cls.TOKEN
+        )
+        with client:
+            try:
+                stmnts = []
+                for key, value in kv_dict.items():
+                    stmnts.append(_sql.insert_kv(key, value, namespace=namespace))
+                libsql_stmnts = _sql.libsql_batch(stmnts)
+                rss = client.batch(libsql_stmnts)
+            except libsql_client.client.LibsqlError:
+                pass
+
 
 

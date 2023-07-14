@@ -3,8 +3,8 @@ import libsql_client
 create_table_keyvalue = '''
 CREATE TABLE keyvalue (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    namespace TEXT UNIQUE NOT NULL,
-    key TEXT NOT NULL,
+    namespace TEXT NOT NULL,
+    key TEXT UNIQUE NOT NULL,
     value TEXT
 );
 '''
@@ -12,8 +12,8 @@ CREATE TABLE keyvalue (
 create_table_leaderboard = '''
 CREATE TABLE leaderboard (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    gamename TEXT UNIQUE NOT NULL,
-    username TEXT NOT NULL,
+    gamename TEXT NOT NULL,
+    username TEXT unique NOT NULL,
     score INTEGER NOT NULL
 );
 '''
@@ -21,8 +21,8 @@ CREATE TABLE leaderboard (
 create_table_counter = '''
 CREATE TABLE counter (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    namespace TEXT UNIQUE NOT NULL,
-    key TEXT NOT NULL,
+    namespace TEXT NOT NULL,
+    key TEXT UNIQUE NOT NULL,
     value INTEGER NOT NULL
 );
 '''
@@ -36,6 +36,16 @@ def insert_leaderboard_value(gamename, player, score):
 
 def select_game(gamename):
     return sql_stmt('select username,score from leaderboard where gamename = ?;', [gamename])
+
+def insert_kv(key, value, namespace='default'):
+    return sql_stmt('INSERT into keyvalue (namespace, key, value) values (?, ?, ?)\
+                    ON CONFLICT(key) DO UPDATE SET value=value;', [namespace, key, value])
+
+def select_kv(namespace='default'):
+    return sql_stmt('select key,value from keyvalue where namespace = ?;', [namespace])
+
+# def check_kv_exists(key, namespace='default'):
+#     return sql_stmt('select value from keyvalue where namespace=? and key=?;', [namespace, key])
 
 def libsql_batch(stmnts):
     '''
