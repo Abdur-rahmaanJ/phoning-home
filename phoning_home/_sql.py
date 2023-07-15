@@ -31,7 +31,8 @@ def sql_stmt(stmnt, args):
     return [stmnt, args]
 
 def insert_leaderboard_value(gamename, player, score):
-    return sql_stmt('insert into leaderboard (gamename, username, score) values (?, ?, ?)', 
+    return sql_stmt('insert into leaderboard (gamename, username, score) values (?, ?, ?)\
+                    ON CONFLICT(username) DO UPDATE SET score=score;', 
                     [gamename, player, score])
 
 def select_game(gamename):
@@ -40,6 +41,15 @@ def select_game(gamename):
 def insert_kv(key, value, namespace='default'):
     return sql_stmt('INSERT into keyvalue (namespace, key, value) values (?, ?, ?)\
                     ON CONFLICT(key) DO UPDATE SET value=value;', [namespace, key, value])
+
+def increase_counter(key, value, namespace='default'):
+    return sql_stmt('INSERT into counter (namespace, key, value) values (?, ?, ?)\
+                    ON CONFLICT (key) DO UPDATE SET value = value + 1;', [namespace, key, value])
+
+def select_counter(key, namespace='default'):
+    return sql_stmt('''select IFNULL(key, '') key, IFNULL(value, 0) value
+                    from counter 
+                    where namespace = ? and key = ?;''', [namespace, key])
 
 def select_kv(namespace='default'):
     return sql_stmt('select key,value from keyvalue where namespace = ?;', [namespace])

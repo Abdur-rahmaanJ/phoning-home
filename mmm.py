@@ -5,6 +5,7 @@ token = os.environ['TURSO_TOKEN']
 ph.connect(os.environ['TURSO_URL'], token)
 
 ph.leaderboard('scrabble-123', 'yus', 100)
+ph.leaderboard('scrabble-123', 'yus', 100)
 leaderboard = ph.fetch('leaderboard', 'scrabble-123')
 print(leaderboard)
 
@@ -25,3 +26,14 @@ data = {
 ph.namedinfo('USER_INFO', data)
 namedinfo = ph.fetch('namedinfo', 'USER_INFO')
 print(namedinfo)
+
+@ph.counter('ZIP_DOWNLOAD')
+def x(defwefr):
+    pass
+
+x(1)
+
+counter = ph.fetch('counter', 'ZIP_DOWNLOAD')
+print(counter)
+counter = ph.fetch('counter', 'ZIP_DOWNLOADzzz')
+print(counter)

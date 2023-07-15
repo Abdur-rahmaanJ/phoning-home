@@ -2,6 +2,8 @@ import libsql_client
 
 from . import _sql
 
+from functools import wraps
+
 class PhoningHome:
     URL = ''
     TOKEN = ''
@@ -84,6 +86,24 @@ class PhoningHome:
                     return rss[0].rows
                 except libsql_client.client.LibsqlError:
                     pass
+        
+        elif optype == 'counter':
+            if len(args) != 2:
+                raise Exception('Args should be: counter, <key value>')
+            
+            key = args[1]
+            client = libsql_client.create_client_sync(
+                url=cls.URL,
+                auth_token=cls.TOKEN
+            )
+            with client:
+                try:
+                    stmnts = [_sql.select_counter(key, namespace='default')]
+                    libsql_stmnts = _sql.libsql_batch(stmnts)
+                    rss = client.batch(libsql_stmnts)
+                    return rss[0].rows
+                except libsql_client.client.LibsqlError:
+                    pass
     
     @classmethod
     def leaderboard(cls, gamename, player, score):
@@ -131,5 +151,22 @@ class PhoningHome:
             except libsql_client.client.LibsqlError:
                 pass
 
-
-
+    @classmethod
+    def counter(cls, counter_key):
+        def actual_decorator(func):
+            @wraps(func)
+            def wrapper(*args, **kwargs):
+                client = libsql_client.create_client_sync(
+                    url=cls.URL,
+                    auth_token=cls.TOKEN
+                )
+                with client:
+                    try:
+                        stmnts = [_sql.increase_counter(counter_key, 1, namespace='default')]
+                        libsql_stmnts = _sql.libsql_batch(stmnts)
+                        rss = client.batch(libsql_stmnts)
+                    except libsql_client.client.LibsqlError as e:
+                        print(e)
+                return func(*args, **kwargs)
+            return wrapper
+        return actual_decorator
