@@ -12,10 +12,7 @@ No server setups needed, only [Turso](https://turso.tech/) atm.
 from phoning_home import ph
 
 # url, token
-ph.connect('http://url.turso.io', 't0k3nfh734tr673gqi78rytg3q34786')
-# or change at any time
-# ph.url('...')
-# ph.token('...')
+ph.connect('http://url.turso.io', 't0k3nfh734tr673gqi78rytg3q34786') # use env vars
 
 # Increment counters
 @ph.counter('ZIP_DWNLDS')
