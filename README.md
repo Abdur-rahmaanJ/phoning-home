@@ -15,28 +15,33 @@ from phoning_home import ph
 ph.connect('http://url.turso.io', 't0k3nfh734tr673gqi78rytg3q34786') # use env vars
 
 # Increment counters
-@ph.counter('ZIP_DWNLDS')
+@ph.counter('ZIP_DOWNLOAD')
 def download_zipfile():
     # code for downloading zip file
     ...
-count = ph.fetch('counter', 'ZIP_DWNLDS') 
+count = ph.fetch('counter', 'ZIP_DOWNLOAD') # [('ZIP_DOWNLOAD', 7)]
 
 # Leaderboard
 ph.leaderboard('scrabble-123', 'yus', 100)
-leaderboard = ph.fetch('leaderboard', 'scrabble-123')
+leaderboard = ph.fetch('leaderboard', 'scrabble-123') # [('yus', 100)]
 
 # Send a deluge of kv values 
 ph.info({
     'version': '1.2.3',
     'os': 'linux'
 })
-info = ph.fetch('info')
+info = ph.fetch('info') # [('version', '1.2.3'), ('os', 'linux')]
 
 # Or namespace it
 data = {
     'name': 'Miaw Spoogle',
     'username': 'purr678'
 }
-ph.namedinfo('USER_INFO', data)
+ph.namedinfo('USER_INFO', data) # [('name', 'Miaw Spoogle'), ('username', 'purr678')]
 namedinfo = ph.fetch('namedinfo', 'USER_INFO')
 ```
+
+
+
+
+

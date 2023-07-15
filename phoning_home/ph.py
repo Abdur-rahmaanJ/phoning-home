@@ -40,6 +40,7 @@ class PhoningHome:
         optype = args[0]
 
         if optype == 'leaderboard':
+            # return [('yus', 100), ]
             if len(args) != 2:
                 raise Exception('Args should be: leaderboard, <gamename>')
             
@@ -57,6 +58,11 @@ class PhoningHome:
                 except libsql_client.client.LibsqlError:
                     pass
         elif optype == 'info':
+            # return [('version', '1.2.3'), ('os', 'linux')]
+
+            if len(args) != 1:
+                raise Exception('Args should be: info')
+
             client = libsql_client.create_client_sync(
                 url=cls.URL,
                 auth_token=cls.TOKEN
@@ -70,6 +76,7 @@ class PhoningHome:
                 except libsql_client.client.LibsqlError:
                     pass
         elif optype == 'namedinfo':
+            # return [('name', 'Miaw Spoogle'), ('username', 'purr678')]
             if len(args) != 2:
                 raise Exception('Args should be: namedinfo, <namespace>')
             
@@ -88,6 +95,7 @@ class PhoningHome:
                     pass
         
         elif optype == 'counter':
+            # return [('ZIP_DOWNLOAD', 7)]
             if len(args) != 2:
                 raise Exception('Args should be: counter, <key value>')
             
